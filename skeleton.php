@@ -7,6 +7,7 @@ abstract class Skeleton {
 	private $errors = [];
 	
 	private $has_custom_nav = false;
+	private $links = [];
 	
 	public function __construct() {
 		$this->init();
@@ -21,9 +22,32 @@ abstract class Skeleton {
 	}
 	public abstract function init();
 	public abstract function getTitle();
-	public abstract function shouldDrawHome();
 	public abstract function drawNav();
 	public abstract function drawSection();
+
+	public function shouldDrawNav() {
+		return true;
+	}
+
+	/**
+	 * Zwraca adres strony, do której ma prowadzić przycisk 'powrót'
+	 *
+	 * @return string adres poprzedniej strony lub null, jeśli brak
+	 */
+	protected function getBackUrl() {
+		return null;
+	}
+
+	/**
+	 * Dodaje link, który zostanie wyświetlony w liście pod logiem strony.
+	 *
+	 * @param string $name 		wyświetlana nazwa
+	 * @param string $address 	nazwa pliku, relatywnie do katalogu szkieletu
+	 * @return void
+	 */
+	protected function addLink($name, $address) {
+		$this->links[$name] = $address;
+	}
 	
 	public function drawCustomNav() {}
 	
@@ -41,14 +65,14 @@ abstract class Skeleton {
 		$this->db->set_charset('UTF8');
 	}
 	
-	private function home_url($appendix = 'index.php') {
+	protected function getFullUrl($appendix = 'index.php') {
 		$text = 'htdocs';
 		$path = getcwd();
 		$index = strpos($path, $text);
 		$path = substr_replace($path, '', 0, $index + strlen($text) + 1);
 		$path = '/' . $path . '/' . $appendix;
-		
-		echo ($path);
+
+		return $path;
 	}
 	
 	protected function info($content) {
@@ -88,18 +112,24 @@ abstract class Skeleton {
 			<div class="row">
 				<nav class="col s12">
 					<div class="nav-wrapper">
-					<?php if ($this->shouldDrawHome()) : ?>
-						<a href="<?php $this->home_url(); ?>"><i class="material-icons left">fast_rewind</i>Strona główna</a>
+					<?php if ($this->getBackUrl()) : ?>
+						<a href="<?php echo $this->getFullUrl($this->getBackUrl()); ?>">
+						<i class="material-icons left">fast_rewind</i>Strona główna</a>
 					<?php endif; ?>
 						<ul class="right">
-							<li><a href="<?php $this->home_url('list_view.php'); ?>">Widok listy</a></li>
-							<li><a href="<?php $this->home_url('category_view.php'); ?>">Widok kategorii</a></li>
+							<?php
+							foreach ($this->links as $name => $address) {
+								$url = $this->getFullUrl($address);
+								echo "<li><a href=\"{$url}\">{$name}</a></li>";
+							}
+							?>
 						</ul>
 					</div>
 				</nav>
 			</div>
 			<section>
 				<div class="row">
+					<?php if ($this->shouldDrawNav()) : ?>
 					<div class="col s4">
 						<?php if (!$this->has_custom_nav) : ?>
 						<div class="card gray">
@@ -112,7 +142,10 @@ abstract class Skeleton {
 						endif;
 						?>
 					</div>
-					<div class="col s8">
+					<?php endif;
+					$col_width = $this->shouldDrawNav() ? 's8' : 's12';
+					?>
+					<div class="col <?php echo $col_width; ?>">
 						<div class="card gray">
 							<div class="card-content">
 <?php

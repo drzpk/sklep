@@ -11,6 +11,15 @@ class CategoryView extends Skeleton {
 	private $query = null;
 	
 	public function init() {
+
+		session_start();
+		//sprawdź, czy użytkownik jest zalogowany
+		if ($_SESSION['admin'] != true) {
+			//nie jest zalogowany, brak dostępu do tego panelu
+			header('Location: ' . $this->getFullUrl('error.php?code=401'));
+			die;
+		}
+
 		$this->init_db();
 		$this->setHasCustomNav(true);
 		
@@ -79,6 +88,9 @@ class CategoryView extends Skeleton {
 		}
 		
 		$this->query = $q;
+
+		//dodanie przycisku do wylogowania
+		$this->addLink('Wyloguj', 'admin.php?logout=');
 	}
 	
 	public function getTitle() {

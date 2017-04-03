@@ -36,7 +36,7 @@ class ListView extends Skeleton {
 	}
 	
 	public function getTitle() {
-		return 'Widok listy';
+		return 'Lista towarów';
 	}
 	
 	public function shouldDrawHome() {
