@@ -1,0 +1,56 @@
+* {
+	font-family: "Roboto", "Calibri", "Arial";
+}
+
+html, body {
+	margin: 0;
+}
+
+header {
+	background-color: #39424e;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 40px;
+}
+
+header h1 {
+	text-transform: uppercase;
+	color: white;
+}
+
+nav {
+	background-color: #c04242;
+}
+
+section div.card:not(.notification) {
+	min-height: 150px;
+}
+
+div.notification .row {
+	margin-bottom: 0;
+}
+
+div.notification div.card-content {
+	padding: 6px;
+}
+
+div.notification p {
+	margin-top: 8px !important;
+	color: white !important;
+}
+
+div.notification i {
+	color: white !important;
+}
+
+.gray {
+	background-color: #fbfbfb;
+}
+
+.inactive {
+	cursor: not-allowed !important;
+}
+
+.delete-item {
+	cursor: pointer;
+}
