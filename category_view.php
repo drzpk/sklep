@@ -317,9 +317,11 @@ class CategoryView extends Skeleton {
 	while ($row = $r->fetch_assoc()) {
 		echo "<tr>";
 		echo "<td>{$row['id_towar']}</td>";
-		echo "<td>{$row['nazwa']}</td>";
+		$full = $this->getFullUrl('element_view.php?id=' . $row['id_towar']);
+		echo "<td><a href=\"{$full}\">{$row['nazwa']}</a></td>";
 		echo "<td>{$row['cena']}</td>";
-		echo '<td><i class="delete-item material-icons" onclick="deleteItem(' . $row['id_towar'] . ')">delete</i></td>';
+		echo '<td><i class="delete-item material-icons"'
+			. ' onclick="deleteItem(' . $row['id_towar'] . ')">delete</i></td>';
 		echo "</tr>";
 	}
 	

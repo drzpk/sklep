@@ -114,7 +114,7 @@ abstract class Skeleton {
 					<div class="nav-wrapper">
 					<?php if ($this->getBackUrl()) : ?>
 						<a href="<?php echo $this->getFullUrl($this->getBackUrl()); ?>">
-						<i class="material-icons left">fast_rewind</i>Strona główna</a>
+						<i class="material-icons left">fast_rewind</i>Powrót</a>
 					<?php endif; ?>
 						<ul class="right">
 							<?php

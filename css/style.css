@@ -54,3 +54,8 @@ div.notification i {
 .delete-item {
 	cursor: pointer;
 }
+
+img.item-big {
+	width: 70%;
+	margin-left: 15%;
+}
