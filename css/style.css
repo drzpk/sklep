@@ -59,3 +59,66 @@ img.item-big {
 	width: 70%;
 	margin-left: 15%;
 }
+
+.inline {
+	display: inline-block;
+}
+
+.item-view {
+	margin: 15px 0;
+}
+
+.item-view > img {
+	width: 20%;
+}
+
+.item-view > div {
+	display: inline-block;
+	width: 79%;
+	vertical-align: top;
+	padding: 10px;
+	padding-left: 18px;
+}
+
+/* tytuł przedmiotu */
+.item-view > div > p:first-child {
+	font-size: 1.2em;
+	font-style: bold;
+	line-height: 1.6em;
+}
+
+/* nazwa kategorii */
+.item-view > div > p:nth-child(3) {
+	text-align: right;
+	margin-top: 5px;
+	font-style: italic;
+}
+
+.item-view > div > div {
+	margin-top: 20px;
+}
+
+/* cena */
+.item-view > div > div >p:first-child {
+	display: inline-block;
+	font-size: 1.2em;
+	font-style: bold;
+}
+
+/* dodaj do koszyka */
+.item-view > div > div > a:nth-child(2) {
+	/*display: inline-block;*/
+	vertical-align: top;
+	background-color: #d28320;
+	color: white;
+	padding-left: 8px;
+	padding-right: 8px;
+	float: right;
+}
+
+/* ikona koszyka */
+.item-view > div > div > a:nth-child(2) > i {
+	width: 30px;
+	position: relative;
+	top: +2px;
+}
