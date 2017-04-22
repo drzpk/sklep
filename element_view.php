@@ -14,11 +14,17 @@ class ElementView extends Skeleton {
 			header('Location: ' . $this->getFullUrl('error.php?code=401'));
 			die;
 		}
+		
+		//połączenie się z bazą danych
+		$this->init_db();
+		
+		//aktualizacja przedmiotu
+		$this->tryUpdateDetails();
 
         $id = (int) @$_REQUEST['id'];
         if ($id) {
             //znaleziono przedmiot
-            $this->init_db();
+            
 
             //pobranie elementu
             $stmt = $this->db->prepare('SELECT * FROM towary WHERE id_towar=?');
@@ -54,6 +60,92 @@ class ElementView extends Skeleton {
         //dodanie przycisku do wylogowania
 		$this->addLink('Wyloguj', 'admin.php?logout=');
     }
+	
+	private function tryUpdateDetails() {
+		if (!array_key_exists('update', $_REQUEST))
+			return;
+		
+		//nazwy pól formularza:
+		//id, name, desc, price, category
+		
+		//weryfikacja identyfikatora
+		$id = (int) @$_REQUEST['id'];
+		$stmt = $this->db->prepare('SELECT nazwa FROM towary WHERE id_towar=?');
+		$stmt->bind_param('i', $id);
+		$stmt->execute();
+		
+		$result = $stmt->get_result();
+		$num = $result->num_rows;
+		$result->close();
+		$stmt->close();
+		
+		if (!$num) {
+			$this->error('Nie znaleziono towaru o podanym identyfikatorze.');
+			return;
+		}
+		
+		//weryfikacja nazwy
+		$name = (string) @$_REQUEST['name'];
+		if (!$name) {
+			$this->warning('Nie podano nazwy towaru.');
+			return;
+		}
+		elseif (strlen($name) < 6) {
+			$this->warning('Nazwa towaru jest za krótka (minimum 6 znaków).');
+			return;
+		}
+		elseif (strlen($name) > 63) {
+			$this->warning('Nazwa towaru jest za długa (maksymalnie 63 znaki).');
+			return;
+		}
+		
+		//weryfikacja opisu
+		$desc = (string) @$_REQUEST['desc'];
+		if (strlen($desc) > 255) {
+			$this->warning('Podany opis jest za długi.');
+			return;
+		}
+		
+		//weryfikacja ceny
+		$price = (int) @$_REQUEST['price'];
+		if (!$price === null) {
+			$this->warning('Nie podano ceny towaru.');
+			return;
+		}
+		elseif ($price < 1) {
+			$this->warning('Cena nie może być mniejsza, niż 1');
+			return;
+		}
+		elseif ($price > 1000000) {
+			$this->warning('Nie przesadzasz trochę z tą ceną?');
+			//bez przerywania działania
+		}
+		
+		//weryfikacja kategorii
+		$cat = (int) @$_REQUEST['category'];
+		$stmt = $this->db->prepare('SELECT nazwa FROM kategorie WHERE id_kategoria=?');
+		$stmt->bind_param('i', $cat);
+		$stmt->execute();
+		
+		$result = $stmt->get_result();
+		$num = $result->num_rows;
+		$result->close();
+		$stmt->close();
+		
+		if ($num == 0) {
+			$this->warning('Nie znaleziono kategorii o podanym identyfikatorze.');
+			return;
+		}
+		
+		//aktualizacja rekordu
+		$stmt = $this->db->prepare('UPDATE towary SET nazwa=?, opis=?, cena=?, id_kategoria=? WHERE id_towar=?');
+		$stmt->bind_param('ssiii', $name, $desc, $price, $cat, $id);
+		$stmt->execute();
+		
+		//dla uproszczenia nie sprawdzam, czy dane faktycznie zostały zaktualizowane
+		//okaże się to, gdy zostaną wyświetlone
+		$this->info('Dane towaru zostały zaktualizowane.');
+	}
 
 	public function getTitle() {
         return 'Szczegóły przedmiotu';
@@ -131,8 +223,8 @@ class ElementView extends Skeleton {
                     <label for="id_name">Nazwa</label>
                 </div>
                 <div class="row input-field">
-                    <textarea lines="2" id="id_textarea" name="desc" value="<?php echo $this->element['opis']; ?>"
-                     class="materialize-textarea" data-length="255"></textarea>
+                    <textarea lines="2" id="id_textarea" name="desc"
+                     class="materialize-textarea" data-length="255"><?php echo $this->element['opis']; ?></textarea>
                     <label for="id_textarea">Opis</label>
                 </div>
                 <div class="row input-field">
