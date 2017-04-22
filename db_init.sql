@@ -36,21 +36,42 @@ CREATE TABLE IF NOT EXISTS users (
 
 SET NAMES UTF8;
 
-#DODANIE PRZYKŁADOWYCH KATEGORII
+#DODANIE KATEGORII
 INSERT IGNORE INTO kategorie VALUES 
 	(1, 'procesory'),
 	(2, 'płyty główne'),
 	(3, 'pamięci RAM'),
-	(4, 'dyski twarde');
+	(4, 'dyski twarde'),
+	(5, 'obudowy'),
+	(6, 'zasilacze');
 
-#DODANIE PRZYKŁADOWYCH TOWARÓW
+#DODANIE TOWARÓW
 INSERT IGNORE INTO towary (id_towar, nazwa, cena, id_kategoria) VALUES 
 	(1, 'Intel Core i5-6300', 990, 1),
 	(2, 'Gigabyte HN37473-USB3', 350, 2),
 	(3, 'Intel Pentium G630', 199, 1),
 	(4, 'Seagate Barracuda 3GGJ382', 245, 4),
 	(5, 'WD Black 3872KM.2', 450, 4),
-	(6, 'Corsair 4GBJW8374', 200, 3);
+	(6, 'Corsair 4GBJW8374', 200, 3),
+	(7, 'COOLERMASTER G750M 750W', 179, 6),
+	(8, 'Corsair Builder Series CX 600W', 319, 6),
+	(9, 'COOLERMASTER THUNDER 500W', 109, 6),
+	(10, 'Modecom Volcano 750W', 259, 6),
+	(11, 'Silentium PC RG1W SPC153', 159, 5),
+	(12, 'Silentium PC M10', 99, 5),
+	(13, 'Zalman Z1 NEO, 3 Went, USB 3.0', 159, 5);
+
+#DODANIE OPISÓW
+UPDATE towary SET opis='Jeden z najwydajniejszych procesorów dostępnych na rynku!'
+	WHERE id_towar=1;
+UPDATE towary SET opis='Nowoczesny dysk twardy oferujący ponadprzeciętną wydajność, w porównaniu do konkurencji'
+	WHERE id_towar=4;
+UPDATE towary SET opis='Z tą obudową Twój komputer nabierze niepowtarzalnej klasy!'
+	WHERE id_towar=8;
+UPDATE towary SET opis='Bardzo mocny zasilacz złożony ręcznie przez małe i wprawne chińskie rączki.'
+	WHERE id_towar=10;
+UPDATE towary SET opis='Krążą legendy, że tej obudowy używał sam Jan III Sobieski.'
+	WHERE id_towar=13;
 
 #DODANIE DOMYŚLNEGO UŻYTKOWNIKA (hasło: root)
 INSERT IGNORE INTO users VALUES 
