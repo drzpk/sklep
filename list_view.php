@@ -1,5 +1,6 @@
 <?php
-include 'skeleton.php';
+require 'skeleton.php';
+require_once 'utils.php';
 
 class ListView extends Skeleton {
 	
@@ -78,8 +79,8 @@ class ListView extends Skeleton {
 		else
 			$page = 1;
 
-		$result = $this->db->query('SELECT COUNT(*) FROM towary');
-		$pages = ceil($result->fetch_array()[0] / self::ELEMENTS_PER_PAGE);
+		$result = $this->db->query($this->query);
+		$pages = ceil($result->num_rows / self::ELEMENTS_PER_PAGE);
 		$result->close();
 
 		if ($page < 1 || $page > $pages) {
@@ -165,8 +166,8 @@ class ListView extends Skeleton {
 		echo '<br>';
 
 		if ($this->current_page > 1) {
-			$prev = $this->current_page - 1;
-			echo "<a class=\"btn-flat\" href=\"{$file}?page={$prev}\">Poprzednia strona</a>";
+			$prev = $this->getCompleteUrl('page', $this->current_page - 1);
+			echo "<a class=\"btn-flat\" href=\"{$file}{$prev}\">Poprzednia strona</a>";
 		}
 		else
 			echo '<p class="disabled inactive btn-flat">Poprzednia strona</p>';
@@ -175,18 +176,20 @@ class ListView extends Skeleton {
 		echo '<p class="inline">Strona: ' . $this->current_page . '/' . $this->total_pages . '</p>';
 		
 		if ($this->has_next_page) {
-			$next = $this->current_page + 1;
-			echo "<a class=\"btn-flat right\" href=\"{$file}?page={$next}\">Następna strona</a>";
+			$next = $this->getCompleteUrl('page', $this->current_page + 1);
+			echo "<a class=\"btn-flat right\" href=\"{$file}{$next}\">Następna strona</a>";
 		}
 		else
 			echo '<p class="disabled inactive btn-flat right">Następna strona</p>';
 	}
 
 	private function displayRow($row) {
+		//TODO: implementacja koszyka
 		echo '<div class="item-view">';
 		if ($row[5]) {
 			$data = 'data:image/png;base64,' . $row[5];
 			echo '<img src="' . $data . '" alt="zdjęcie przedmiotu">';
+			$this->getSortedUrl(null, null);
 		}
 		else
 			echo '<img src="img/blank-image.png" alt="zdjęcie przedmiotu">';
@@ -202,6 +205,23 @@ class ListView extends Skeleton {
 		</div>
 	</div>
 <?php
+	}
+
+	/**
+	 * Zwraca adres url, który zawiera parametry filtrowania, sortowania oraz ten podany jako argument.
+	 *
+	 * @param string $param nazwa parametru
+	 * @param string $val wartość parametru
+	 * @return void
+	 */
+	private function getCompleteUrl($param, $val) {
+		$pc = new ParamConstructor();
+		if ($this->sort != -1)
+			$pc->add('sort', $this->sort);
+		if ($this->filter != -1)
+			$pc->add('filter', $this->filter);
+		$pc->add($param, $val);
+		return $pc->get();
 	}
 }
 
