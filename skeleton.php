@@ -66,11 +66,10 @@ abstract class Skeleton {
 	}
 	
 	protected function getFullUrl($appendix = 'index.php') {
-		$text = 'htdocs';
-		$path = getcwd();
-		$index = strpos($path, $text);
-		$path = substr_replace($path, '', 0, $index + strlen($text) + 1);
-		$path = '/' . $path . '/' . $appendix;
+		$path = $_SERVER['PHP_SELF'];
+		$index = strrpos($path, '/');
+		$path = substr($path, 0, $index + 1);
+		$path = $path . $appendix;
 
 		return $path;
 	}
