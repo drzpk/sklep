@@ -3,6 +3,9 @@ include 'skeleton.php';
 
 class ElementView extends Skeleton {
 
+    /** Maksymalny rozmiar wysyłanego zdjęcia, w bajtach */
+    const MAX_UPLOAD_SIZE = 500 * 1024;
+
     private $element;
     private $categories;
 
@@ -17,15 +20,11 @@ class ElementView extends Skeleton {
 		
 		//połączenie się z bazą danych
 		$this->init_db();
-		
-		//aktualizacja przedmiotu
-		$this->tryUpdateDetails();
 
         $id = (int) @$_REQUEST['id'];
         if ($id) {
             //znaleziono przedmiot
             
-
             //pobranie elementu
             $stmt = $this->db->prepare('SELECT * FROM towary WHERE id_towar=?');
             $stmt->bind_param('i', $id);
@@ -39,10 +38,19 @@ class ElementView extends Skeleton {
             else {
                 //brak przedmiotu o podanym id w bazie
                 $this->error('Nie znaleziono przedmiotu o podanym identyfikatorze');
+                $result->close();
+                $stmt->close();
+                return;
             }
 
             $result->close();
             $stmt->close();
+
+            //aktualizacja przedmiotu
+		    if ($this->tryUpdateDetails())
+                return;
+            //aktualizacja zdjęcia
+            $this->tryUpdateFile();
 
             //pobranie listy kategorii
             $result = $this->db->query('SELECT * FROM kategorie ORDER BY nazwa DESC');
@@ -67,22 +75,6 @@ class ElementView extends Skeleton {
 		
 		//nazwy pól formularza:
 		//id, name, desc, price, category
-		
-		//weryfikacja identyfikatora
-		$id = (int) @$_REQUEST['id'];
-		$stmt = $this->db->prepare('SELECT nazwa FROM towary WHERE id_towar=?');
-		$stmt->bind_param('i', $id);
-		$stmt->execute();
-		
-		$result = $stmt->get_result();
-		$num = $result->num_rows;
-		$result->close();
-		$stmt->close();
-		
-		if (!$num) {
-			$this->error('Nie znaleziono towaru o podanym identyfikatorze.');
-			return;
-		}
 		
 		//weryfikacja nazwy
 		$name = (string) @$_REQUEST['name'];
@@ -141,11 +133,74 @@ class ElementView extends Skeleton {
 		$stmt = $this->db->prepare('UPDATE towary SET nazwa=?, opis=?, cena=?, id_kategoria=? WHERE id_towar=?');
 		$stmt->bind_param('ssiii', $name, $desc, $price, $cat, $id);
 		$stmt->execute();
+        $stmt->close();
+
+        //aktualizacja pobranego wcześniej elementu z bazy
+        $this->element['nazwa'] = $name;
+        $this->element['opis'] = $desc;
+        $this->element['cena'] = $price;
+        $this->element['id_kategoria'] = $cat;
 		
 		//dla uproszczenia nie sprawdzam, czy dane faktycznie zostały zaktualizowane
 		//okaże się to, gdy zostaną wyświetlone
 		$this->info('Dane towaru zostały zaktualizowane.');
 	}
+
+    private function tryUpdateFile() {
+        if (array_key_exists('file-submit', $_REQUEST) && isset($_FILES['file'])) {
+            //aktualizacja pliku
+            $file = $_FILES['file'];
+            if ($file['error']) {
+                $this->warning('Wystąpił nieznzny błąd podczas wysyłania pliku ('
+                                . $file['error'] . '). Skonsultuj się z lekarzm lub farmaceutą.');
+                return;
+            }
+            elseif ($file['size'] > self::MAX_UPLOAD_SIZE) {
+                $this->warning('Rozmiar pliku jest za duży. Maksymalny rozmiar to'
+                                . (self::MAX_UPLOAD_SIZE / 1024) . 'KB.');
+                return;
+            }
+
+            $id = (int) $_REQUEST['id'];
+            
+            //$prev = error_reporting(0);
+            $img = imagecreatefromstring(file_get_contents($file['tmp_name']));
+            if (!$img) {
+                $this->warning('Podany plik nie jest zdjęciem!');
+                return;
+            }
+
+            ob_start();
+            imagepng($img);
+            $png = ob_get_contents();
+            ob_end_clean();
+            imagedestroy($img);
+            //error_reporting($prev);
+
+            //zapisanie zdjęcia do bazy
+            $stmt = $this->db->prepare('UPDATE towary SET image=? WHERE id_towar=?');
+            $n = NULL;
+            $stmt->bind_param('bi', $n, $id);
+
+            $chunks = str_split($png, 4096);
+            foreach ($chunks as $c)
+                $stmt->send_long_data(0, $c);
+            $stmt->execute();
+            $stmt->close();
+
+            $this->element['image'] = $png;
+            
+            $this->info('Zdjęcie zostało zaktualizowane.');
+        }
+        elseif (array_key_exists('reset-image', $_REQUEST)) {
+            //przywrócenie domyślnego zdjęcia
+            $id = (int) $_REQUEST['id'];
+            $this->db->query('UPDATE towary SET image=NULL WHERE id_towar=' . $id);
+            $this->element['image'] = null;
+
+            $this->info('Zdjęcie zostało zresetowane.');
+        }
+    }
 
 	public function getTitle() {
         return 'Szczegóły przedmiotu';
@@ -186,7 +241,7 @@ class ElementView extends Skeleton {
                 ?>
                 </div>
             </div>
-            <form method="POST">
+            <form enctype="multipart/form-data" method="POST">
                 <div class="row">
                     <div class="input-field file-field">
                         <div class="btn">

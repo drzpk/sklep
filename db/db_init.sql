@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS towary (
 	opis VARCHAR(256), 
 	cena INT(11) NOT NULL,
 	id_kategoria INT(11) NOT NULL,
-	image BLOB,
+	image MEDIUMBLOB,
 	PRIMARY KEY(id_towar),
 	FOREIGN KEY(id_kategoria) REFERENCES kategorie(id_kategoria)
 );

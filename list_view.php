@@ -187,9 +187,8 @@ class ListView extends Skeleton {
 		//TODO: implementacja koszyka
 		echo '<div class="item-view">';
 		if ($row[5]) {
-			$data = 'data:image/png;base64,' . $row[5];
+			$data = 'data:image/png;base64,' . base64_encode($row[5]);
 			echo '<img src="' . $data . '" alt="zdjęcie przedmiotu">';
-			$this->getSortedUrl(null, null);
 		}
 		else
 			echo '<img src="img/blank-image.png" alt="zdjęcie przedmiotu">';
