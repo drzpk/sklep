@@ -57,3 +57,21 @@ class ParamConstructor {
         return $inst->get();
     }
 }
+
+/**
+ * Tworzy nowe połączenie z bazą danych. Jeśli nie udało się nawiązać połącznia,
+ * rzucany jest wyjątek.
+ *
+ * @return obiekt mysqli
+ **/
+function get_db() {
+    $old = error_reporting(0);
+    $db = new mysqli('localhost', 'root', 'Hs9do4x', 'sklep');
+    error_reporting($old);
+    if ($db->connect_errno) {
+        throw new Exception('Nie można nawiązać połączenia z bazą danych!');
+    }
+
+    $db->set_charset('UTF8');
+    return $db;
+}

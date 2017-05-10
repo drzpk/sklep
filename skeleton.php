@@ -1,4 +1,6 @@
 <?php 
+require_once 'utils.php';
+
 abstract class Skeleton {
 	
 	protected $db = null;
@@ -56,13 +58,14 @@ abstract class Skeleton {
 	}
 	
 	protected function init_db() {
-		$this->db = new mysqli('localhost', 'root', 'Hs9do4x', 'sklep');
-		if ($this->db->connect_errno) {
+		try {
+			$this->db = get_db();
+		} 
+		catch (Exception $e) {
 			http_response_code(500);
-			echo 'Nie można nawiązać połączenia z bazą danych!';
+			echo $e->getMessage();
 			die;
 		}
-		$this->db->set_charset('UTF8');
 	}
 	
 	protected function getFullUrl($appendix = 'index.php') {
