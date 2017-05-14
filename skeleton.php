@@ -1,9 +1,12 @@
 <?php 
 require_once 'utils.php';
+require_once 'cart.php';
 
 abstract class Skeleton {
 	
 	protected $db = null;
+	protected $cart = null;
+
 	private $info = [];
 	private $warnings = [];
 	private $errors = [];
@@ -12,6 +15,7 @@ abstract class Skeleton {
 	private $links = [];
 	
 	public function __construct() {
+		$this->cart = new Cart();
 		$this->init();
 		$this->drawLayout();
 		
@@ -109,6 +113,11 @@ abstract class Skeleton {
 			<div class="row">
 				<header class="col s12">
 					<h1>Sklep komputerowy</h1>
+					<div id="basket">
+						<a href="cart_view.php">
+						<i class="material-icons small">shopping_basket</i><p><?php $this->cartInfo(); ?></p>
+						</a>
+					</div>
 				</header>
 			</div>
 			<div class="row">
@@ -175,6 +184,7 @@ else {
 				</div>
 			</section>
 		</div>
+		<script>var size = <?php echo $this->cart->size(); ?>;</script>
 	</body>
 </html>
 <?php
@@ -230,5 +240,20 @@ else {
 </div>
 <?php	
 	}
+
+	private function cartInfo() {
+		$size = $this->cart->size();
+		if ($size > 0) {
+			if ($size == 1)
+				echo '1 przedmiot';
+			elseif ($size < 5 || ($size > 21 && $size % 10 > 1 && $size % 10 < 5))
+				echo $size . ' przedmioty';
+			else
+				echo $size . ' przedmotów';
+		}
+		else 
+			echo '<i>koszyk jest pusty</i>';
+	}
+
 }
 ?>

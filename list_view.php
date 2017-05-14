@@ -199,7 +199,7 @@ class ListView extends Skeleton {
 			<p><?php echo $row[4]; ?></p>
 			<div>
 				<p><?php echo $row[3] . 'zł'; ?></p>
-				<a class="btn" eid="<?php echo $row[0]; ?>"><i class="material-icons">shopping_card</i>Dodaj do koszyka</a>
+				<a class="btn shop-cart-add" eid="<?php echo $row[0]; ?>"><i class="material-icons">shopping_card</i>Dodaj do koszyka</a>
 			</div>
 		</div>
 	</div>
