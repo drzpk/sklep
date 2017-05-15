@@ -111,6 +111,10 @@ class ListView extends Skeleton {
 	public function shouldDrawHome() {
 		return true;
 	}
+
+	protected function getBackUrl() {
+		return 'index.php';
+	}
 	
 	public function drawNav() {
 ?>
@@ -184,7 +188,6 @@ class ListView extends Skeleton {
 	}
 
 	private function displayRow($row) {
-		//TODO: implementacja koszyka
 		echo '<div class="item-view">';
 		if ($row[5]) {
 			$data = 'data:image/png;base64,' . base64_encode($row[5]);
