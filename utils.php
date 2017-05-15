@@ -66,7 +66,7 @@ class ParamConstructor {
  **/
 function get_db() {
     $old = error_reporting(0);
-    $db = new mysqli('localhost', 'root', 'Hs9do4x', 'sklep');
+    $db = new mysqli('p:localhost', 'root', 'Hs9do4x', 'sklep');
     error_reporting($old);
     if ($db->connect_errno) {
         throw new Exception('Nie można nawiązać połączenia z bazą danych!');
