@@ -71,6 +71,16 @@ abstract class Skeleton {
 			die;
 		}
 	}
+
+	/**
+	 * Startuje sesję, jeśli jeszcze nie została wystartowana.
+	 *
+	 * @return void
+	 */
+	protected function session_start() {
+		 if (session_id() == '')
+            session_start();
+	}
 	
 	protected function getFullUrl($appendix = 'index.php') {
 		$path = $_SERVER['PHP_SELF'];

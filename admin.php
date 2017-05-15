@@ -6,11 +6,16 @@ class Admin extends Skeleton {
     private $logged_in = false;
 
     public function init() {
-        session_start();
+        $this->session_start();
         if (array_key_exists('logout', $_REQUEST)) {
-            //wyloguj użytkownika
-            session_unset();
-            $this->info('Zostałeś wylogowany');
+            if (@$_SESSION['admin'] == true) {
+                //wyloguj użytkownika
+                session_unset();
+                $this->info('Zostałeś wylogowany.');
+            }
+            else
+                $this->warning('Nikt nie był zalogowany.');
+            return;
         }
 
         //sprawdź, czy użytkownik jest zalogowany

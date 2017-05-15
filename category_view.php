@@ -11,8 +11,7 @@ class CategoryView extends Skeleton {
 	private $query = null;
 	
 	public function init() {
-
-		session_start();
+		$this->session_start();
 		//sprawdź, czy użytkownik jest zalogowany
 		if ($_SESSION['admin'] != true) {
 			//nie jest zalogowany, brak dostępu do tego panelu
