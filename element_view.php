@@ -12,7 +12,7 @@ class ElementView extends Skeleton {
     public function init() {
         $this->session_start();
 		//sprawdź, czy użytkownik jest zalogowany
-		if ($_SESSION['admin'] != true) {
+		if (@$_SESSION['admin'] != true) {
 			//nie jest zalogowany, brak dostępu do tego panelu
 			header('Location: ' . $this->getFullUrl('error.php?code=401'));
 			die;

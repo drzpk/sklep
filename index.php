@@ -31,6 +31,7 @@ class Index extends Skeleton {
 			<li>Biblioteka JS: jQuery 3.1.1</li>
 			<li>Liczba linijek kodu (15.05.2017): 1822</li>
 			<li>Autor: <strong>Dominik Rzepka</strong></li>
+			<li>Kod źródłowy: <a href="https://gitlab.com/d_rzepka/sklep">LINK</a></li>
 		</ul>
 		<br>
 		<h5>Wybrane dla ciebie:</h5>
